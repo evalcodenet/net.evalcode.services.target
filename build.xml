@@ -159,13 +159,21 @@ jvisualvm \
   --openjmx localhost:1337
     </echo>
     <zip destfile="${dir.dist}/${file.dist.bin.server}">
+      <zipfileset dir="${dir.config}/default" prefix="config/default">
+        <exclude name="jmxremote.access"/>
+        <exclude name="jmxremote.password"/>
+        <exclude name="keystore"/>
+        <exclude name="truststore"/>
+        <exclude name="security.policy"/>
+      </zipfileset>
       <zipfileset dir="${dir.config}/default" prefix="config/default" filemode="400">
+        <include name="jmxremote.access"/>
+        <include name="jmxremote.password"/>
         <include name="keystore"/>
         <include name="truststore"/>
         <include name="security.policy"/>
-        <include name="jmxremote.access"/>
-        <include name="jmxremote.password"/>
       </zipfileset>
+      <zipfileset dir="${dir.config}/production" prefix="config/production" excludes=".gitignore"/>
       <zipfileset dir="${dir.resources}" prefix="resources" excludes=".gitignore"/>
       <zipfileset dir="${dir.features}" prefix="features" excludes=".gitignore"/>
       <zipfileset dir="${dir.plugins}" prefix="plugins" excludes=".gitignore"/>

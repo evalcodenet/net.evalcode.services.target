@@ -10,9 +10,9 @@
     "host": "services.evalcode.net",
     "port": "8443",
 
-    "keystore": "${net.evalcode.services.config}/default/net.evalcode.services.http/certificates/keystore",
+    "keystore": "${net.evalcode.services.config}/keystore",
     "keystore_password": "services",
-    "truststore": "${net.evalcode.services.config}/default/net.evalcode.services.http/certificates/truststore",
+    "truststore": "${net.evalcode.services.config}/truststore",
     "truststore_password": "services"
   }
 ]}
