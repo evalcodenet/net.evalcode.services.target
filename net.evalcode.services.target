@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+
+<target name="net.evalcode.services">
+<locations>
+<location path="${project_loc}" type="Directory"/>
+</locations>
+<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+</target>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+
+
+  <jmxConfigurator />
+
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${net.evalcode.services.home}/log/net.evalcode.services.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+     <fileNamePattern>${net.evalcode.services.home}/log/net.evalcode.services-%d{yyyy-MM-dd}.log</fileNamePattern>
+     <maxHistory>30</maxHistory>
+   </rollingPolicy>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
+    <syslogHost>localhost</syslogHost>
+    <facility>LOCAL0</facility>
+    <suffixPattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</suffixPattern>
+  </appender>
+
+  <appender name="SMTP" class="ch.qos.logback.classic.net.SMTPAppender">
+    <smtpHost>localhost</smtpHost>
+    <to>carsten.schipke@gmail.com</to>
+    <from>services@evalcode.net</from>
+    <subject>[net.evalcode.services]</subject>
+    <layout class="ch.qos.logback.classic.html.HTMLLayout"/>
+    <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">
+      <bufferSize>100</bufferSize>
+    </cyclicBufferTracker>
+  </appender>
+
+
+  <root level="DEBUG">
+    <appender-ref ref="FILE"/>
+    <appender-ref ref="STDOUT"/>
+  </root>
+
+  <logger name="net.evalcode" level="DEBUG"/>
+  <logger name="net.sf.ehcache" level="INFO"/>
+  <logger name="org.eclipse" level="INFO"/>
+  <logger name="org.hibernate" level="INFO"/>
+
+
+</configuration>

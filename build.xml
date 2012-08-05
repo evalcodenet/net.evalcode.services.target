@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="net.evalcode.services.target" basedir="." default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+
+  <!-- properties -->
+  <property file="build.properties"/>
+  <property url="${build.properties.common}"/>
+
+  <mkdir dir="${dir.lib.build}"/>
+  <get src="${net.evalcode.util.build.repository}/${net.evalcode.util.build.common.module}/${net.evalcode.util.build.common.version}/${net.evalcode.util.build.common.module}-${net.evalcode.util.build.common.version}-${net.evalcode.util.build.common.artifact}" dest="${dir.lib.build}/${net.evalcode.util.build.common.artifact}" usetimestamp="true"/>
+  <ant antfile="${dir.lib.build}/${net.evalcode.util.build.common.artifact}" target="install.build" inheritall="false"/>
+  <import file="${dir.lib.build}/${net.evalcode.util.build.common.artifact}"/>
+
+  
+  <!-- environment settings -->
+  <target name="env">
+    <!-- assemble version string ${net.evalcode.bundle.version.build} -->
+    <condition property="bundle.version.string" value="${bundle.version.major}.${bundle.version.minor}.${net.evalcode.bundle.version.build}">
+      <isset property="net.evalcode.bundle.version.build"/>
+    </condition>
+    <property name="bundle.version.string" value="${bundle.version.major}.${bundle.version.minor}.${bundle.version.build}"/>
+    <!-- assemble file names -->
+    <property name="file.dist.prefix" value="${bundle.name.full}-${bundle.version.string}"/>
+    <property name="file.dist.bin.jar" value="${file.dist.prefix}.jar"/>
+    <property name="file.dist.src.zip" value="${file.dist.prefix}-src.zip"/>
+    <property name="file.dist.bin.zip" value="${file.dist.prefix}-bin.zip"/>
+    <property name="file.dist.doc.zip" value="${file.dist.prefix}-doc.zip"/>
+    <property name="file.dist.bin.server" value="${file.dist.prefix}-server.zip"/>
+  </target>
+
+
+  <!-- clean -->
+  <target name="clean">
+    <delete dir="${dir.build}" includeemptydirs="true"/>
+    <delete dir="${dir.dist}" defaultexcludes="true">
+      <include name="*.jar"/>
+      <include name="*.zip"/>
+    </delete>
+  </target>
+
+  <target name="clean.build">
+    <delete dir="${dir.build}" includeemptydirs="true"/>
+  </target>
+
+
+  <!-- prepare -->
+  <target name="prepare" depends="clean.build,env">
+    <mkdir dir="${dir.build}"/>
+  </target>
+
+
+  <!-- resolve -->
+  <target name="resolve" depends="prepare">
+    <delete dir="${dir.plugins}">
+      <exclude name=".gitignore"/>
+    </delete>
+    <ivy:resolve />
+    <ivy:retrieve pattern="${dir.plugins}/[organisation].[artifact]-[revision].[ext]"/>
+  </target>
+
+
+  <!-- build jar: osgi bundle -->
+  <target name="jar.bundle" depends="prepare">
+    <jar basedir="${dir.build}" destfile="${dir.dist}/${file.dist.bin.jar}" update="false" compress="false" index="false">
+      <zipfileset dir="${dir.config}" prefix="config" filemode="644">
+        <exclude name="default/jmxremote.password"/>
+      </zipfileset>
+      <zipfileset dir="${dir.config}/default" prefix="config/default" filemode="600">
+        <include name="jmxremote.password"/>
+      </zipfileset>
+      <zipfileset dir="${dir.features}" prefix="features" excludes="*"/>
+      <zipfileset dir="${dir.plugins}" prefix="plugins" excludes="*"/>
+      <zipfileset dir="${dir.log}" prefix="log" excludes="*"/>
+    </jar>
+  </target>
+
+
+  <!-- publish artifacts -->
+  <target name="publish" depends="jar.bundle">
+    <tstamp>
+      <format property="now" pattern="yyyyMMddHHmmss" locale="zh,CN"/> 
+    </tstamp>
+    <ivy:install from="dist" to="remote" overwrite="true" validate="true"
+      organisation="${bundle.group}" module="${bundle.name}" revision="${bundle.version.string}"/>
+  </target>
+  
+
+  <!-- distribution: sources -->
+  <target name="dist.sources" depends="prepare">
+    <zip destfile="${dir.dist}/${file.dist.src.zip}">
+      <zipfileset dir="${bundle.base}">
+        <include name="build.properties"/>
+        <include name=".project"/>
+        <include name="*.launch"/>
+        <include name="*.target"/>
+        <include name="*.xml"/>
+      </zipfileset>
+      <zipfileset dir="${dir.config}" prefix="config"/>
+      <zipfileset dir="${dir.features}" prefix="features" excludes="*"/>
+      <zipfileset dir="${dir.plugins}" prefix="plugins" excludes="*"/>
+      <zipfileset dir="${dir.dist}" prefix="dist" excludes="*.zip"/>
+      <zipfileset dir="${dir.doc}" prefix="doc"/>
+      <zipfileset dir="${dir.log}" prefix="log" excludes="*"/>
+    </zip>
+  </target>
+
+
+  <!-- distribution: binaries -->
+  <target name="dist.binaries" depends="resolve">
+    <zip destfile="${dir.dist}/${file.dist.bin.zip}">
+      <zipfileset dir="${dir.config}" prefix="config"/>
+      <zipfileset dir="${dir.features}" prefix="features" excludes=".gitignore"/>
+      <zipfileset dir="${dir.plugins}" prefix="plugins" excludes=".gitignore"/>
+      <zipfileset dir="${dir.log}" prefix="log" excludes="*"/>
+    </zip>
+  </target>
+
+
+  <!-- distribution: server -->
+  <target name="dist.server" depends="resolve">
+    <copy todir="${dir.build}">
+      <fileset file="${dir.launcher}/${file.launcher.jar}"/>
+    </copy>
+    <echo file="${dir.build}/${file.launcher.sh}">#!/bin/sh
+java \
+  -Declipse.ignoreApp=true \
+  -Dosgi.noShutdown=true \
+  -Dlogback.configurationFile=config/default/logback.xml \
+  -Djava.net.preferIPv4Stack=true \
+  -Djava.rmi.server.hostname=services.evalcode.net \
+  -Djava.security.manager \
+  -Djava.security.policy=config/default/security.policy \
+  -Djavax.net.ssl.keyStore=config/default/keystore \
+  -Djavax.net.ssl.keyStorePassword=services \
+  -Djavax.net.ssl.trustStore=config/default/truststore \
+  -Djavax.net.ssl.trustStorePassword=services \
+  -Dcom.sun.management.jmxremote \
+  -Dcom.sun.management.jmxremote.ssl=true \
+  -Dcom.sun.management.jmxremote.ssl.need.client.auth=true \
+  -Dcom.sun.management.jmxremote.port=1337 \
+  -Dcom.sun.management.jmxremote.authenticate=true \
+  -Dcom.sun.management.jmxremote.access.file=config/default/jmxremote.access \
+  -Dcom.sun.management.jmxremote.password.file=config/default/jmxremote.password \
+  -Dnet.sf.ehcache.disabled=false \
+  -Dnet.sf.ehcache.configurationResourceName=ehcache.xml \
+  -Dnet.evalcode.services.environment=production \
+  -Dnet.evalcode.services.home=. \
+  -Dnet.evalcode.services.config=./config \
+  -Dnet.evalcode.services.resources=./resources \
+  -jar startup.jar -configuration config -console
+    </echo>
+    <echo file="${dir.build}/${file.jvisualvm.sh}">#!/bin/sh
+jvisualvm \
+  -J-Dcom.sun.management.jmxremote.ssl=true \
+  -J-Djavax.net.ssl.keyStore=config/default/keystore \
+  -J-Djavax.net.ssl.keyStorePassword=services \
+  -J-Djavax.net.ssl.trustStore=config/default/truststore \
+  -J-Djavax.net.ssl.trustStorePassword=services \
+  --openjmx localhost:1337
+    </echo>
+    <zip destfile="${dir.dist}/${file.dist.bin.server}">
+      <zipfileset dir="${dir.config}/default" prefix="config/default" filemode="400">
+        <include name="keystore"/>
+        <include name="truststore"/>
+        <include name="security.policy"/>
+        <include name="jmxremote.access"/>
+        <include name="jmxremote.password"/>
+      </zipfileset>
+      <zipfileset dir="${dir.resources}" prefix="resources" excludes=".gitignore"/>
+      <zipfileset dir="${dir.features}" prefix="features" excludes=".gitignore"/>
+      <zipfileset dir="${dir.plugins}" prefix="plugins" excludes=".gitignore"/>
+      <zipfileset dir="${dir.log}" prefix="log" excludes="*"/>
+      <zipfileset dir="${dir.build}" filemode="644">
+        <include name="${file.launcher.jar}"/>
+      </zipfileset>
+      <zipfileset dir="${dir.build}" filemode="755">
+        <include name="${file.launcher.sh}"/>
+        <include name="${file.jvisualvm.sh}"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+
+  <!-- distribution: documentations -->
+  <target name="dist.documentations" depends="prepare">
+    <zip destfile="${dir.dist}/${file.dist.doc.zip}">
+      <zipfileset dir="${dir.doc}" prefix="doc" excludes=".gitignore"/>
+    </zip>
+  </target>
+
+
+  <!-- build [default] -->
+  <target name="build" depends="dist.sources,dist.binaries,dist.documentations">
+    <antcall target="clean.build"/>
+  </target>
+
+</project>
