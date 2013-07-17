@@ -2,7 +2,11 @@
   {
     "scheme": "HTTP",
     "host": "services.evalcode.net",
-    "port": "8080"
+    "port": "8080",
+
+    "enable_direct_buffers": true,
+    "enable_reverse_lookup": false,
+    "enable_statistics": true
   },
 
   {
@@ -13,6 +17,11 @@
     "keystore": "${net.evalcode.services.config}/default/keystore",
     "keystore_password": "services",
     "truststore": "${net.evalcode.services.config}/default/truststore",
-    "truststore_password": "services"
+    "truststore_password": "services",
+    "certificate_alias": "services.evalcode.net",
+
+    "enable_direct_buffers": true,
+    "enable_reverse_lookup": false,
+    "enable_statistics": true
   }
 ]}

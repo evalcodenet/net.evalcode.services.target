@@ -159,6 +159,9 @@ jvisualvm \
   --openjmx localhost:1337
     </echo>
     <zip destfile="${dir.dist}/${file.dist.bin.server}">
+      <zipfileset dir="${dir.config}" prefix="config">
+        <include name="config.ini"/>
+      </zipfileset>
       <zipfileset dir="${dir.config}/default" prefix="config/default">
         <exclude name="jmxremote.access"/>
         <exclude name="jmxremote.password"/>
