@@ -83,7 +83,7 @@
     <ivy:install from="dist" to="remote" overwrite="true" validate="true"
       organisation="${bundle.group}" module="${bundle.name}" revision="${bundle.version.string}"/>
   </target>
-  
+
 
   <!-- distribution: sources -->
   <target name="dist.sources" depends="prepare">
@@ -198,7 +198,7 @@ jvisualvm \
 
 
   <!-- build [default] -->
-  <target name="build" depends="dist.sources,dist.binaries,dist.documentations">
+  <target name="build" depends="dist.sources,dist.binaries,dist.server,dist.documentations">
     <antcall target="clean.build"/>
   </target>
 

@@ -1,0 +1,18 @@
+{"http_connectors": [
+  {
+    "scheme": "HTTP",
+    "host": "services.dev",
+    "port": "8080"
+  },
+
+  {
+    "scheme": "HTTPS",
+    "host": "services.dev",
+    "port": "8443",
+
+    "keystore": "${net.evalcode.services.config}/dev/keystore",
+    "keystore_password": "services",
+    "truststore": "${net.evalcode.services.config}/dev/truststore",
+    "truststore_password": "services"
+  }
+]}
