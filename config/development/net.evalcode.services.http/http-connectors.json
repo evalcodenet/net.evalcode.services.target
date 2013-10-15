@@ -1,17 +1,17 @@
 {"http_connectors": [
   {
     "scheme": "HTTP",
-    "host": "services.dev",
+    "host": "127.0.0.1",
     "port": "8080",
 
-    "enable_direct_buffers": true,
-    "enable_reverse_lookup": false,
-    "enable_statistics": true
+    "enable_direct_buffers": "true",
+    "enable_reverse_lookup": "false",
+    "enable_statistics": "true"
   },
 
   {
     "scheme": "HTTPS",
-    "host": "services.dev",
+    "host": "127.0.0.1",
     "port": "8443",
 
     "keystore": "${net.evalcode.services.config}/default/keystore",
@@ -20,8 +20,8 @@
     "truststore_password": "services",
     "certificate_alias": "services.dev",
 
-    "enable_direct_buffers": true,
-    "enable_reverse_lookup": false,
-    "enable_statistics": true
+    "enable_direct_buffers": "true",
+    "enable_reverse_lookup": "false",
+    "enable_statistics": "true"
   }
 ]}
