@@ -3,11 +3,10 @@
   monitoring="autodetect" dynamicConfig="true" updateCheck="false">
 
 
-  <diskStore path="java.io.tmpdir"/>
+  <diskStore path="java.io.tmpdir/net.evalcode.services"/>
 
 
   <cacheManagerPeerProviderFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheManagerPeerProviderFactory"/>
-
 
   <defaultCache 
     eternal="false"
@@ -20,19 +19,32 @@
     memoryStoreEvictionPolicy="LRU"
     timeToIdleSeconds="100"
     timeToLiveSeconds="300"
-    statistics="true"
+    statistics="false"
   />
 
 
   <cache name="net.evalcode.services.cache.entity"
     eternal="false"
     overflowToDisk="false"
-    maxElementsInMemory="10000"
+    maxEntriesLocalHeap="1000"
     timeToIdleSeconds="100"
     timeToLiveSeconds="100"
-    statistics="true">
+    statistics="false">
     <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
-      properties="replicateAsynchronously=true,asynchronousReplicationIntervalMillis=1000ms,replicatePuts=true,replicateUpdates=true,replicateUpdatesViaCopy=false,replicateRemovals=true"
+      properties="replicateAsynchronously=true,replicatePuts=true,replicateUpdates=true,replicateUpdatesViaCopy=false,replicateRemovals=true"
+    />
+  </cache>
+
+
+  <cache name="com.everwines.services.sap.entity"
+    eternal="false"
+    overflowToDisk="false"
+    maxEntriesLocalHeap="1000"
+    timeToIdleSeconds="100"
+    timeToLiveSeconds="100"
+    statistics="false">
+    <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+      properties="replicateAsynchronously=true,replicatePuts=true,replicateUpdates=true,replicateUpdatesViaCopy=false,replicateRemovals=true"
     />
   </cache>
 

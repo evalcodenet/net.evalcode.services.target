@@ -18,7 +18,7 @@
       <property name="hibernate.show_sql" value="false"/>
       <!-- query & object cache properties -->
       <property name="hibernate.bytecode.use_reflection_optimizer" value="true"/>
-      <property name="hibernate.cache.region.factory_class" value="net.evalcode.services.manager.cache.EhCacheFactory"/>
+      <property name="hibernate.cache.region.factory_class" value="net.evalcode.services.manager.service.cache.ehcache.EhcacheHibernateRegionCacheFactory"/>
       <property name="hibernate.cache.use_structured_entries" value="true"/>
       <property name="hibernate.cache.use_query_cache" value="true"/>
       <property name="hibernate.cache.use_second_level_cache" value="true"/>
