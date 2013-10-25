@@ -9,8 +9,6 @@
   <defaultCache
     eternal="false"
     statistics="true"
-    overflowToDisk="false"
-    diskPersistent="false"
     timeToIdleSeconds="120"
     timeToLiveSeconds="120"
     maxEntriesLocalHeap="1000000"
@@ -22,16 +20,24 @@
   <cache name="net.evalcode.services.cache.entity"
     eternal="false"
     statistics="true"
-    overflowToDisk="false"
-    diskPersistent="false"
-    maxElementsInMemory="1000000"
-    maxEntriesLocalHeap="1000000"
+    maxBytesLocalHeap="128m"
     maxBytesLocalOffHeap="256m"
     timeToIdleSeconds="120"
     timeToLiveSeconds="120">
-    <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
-      properties="replicateAsynchronously=true,replicatePuts=true,replicateUpdates=true,replicateUpdatesViaCopy=false,replicateRemovals=true"
-    />
+    <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    <persistence strategy="localTempSwap"/>
+  </cache>
+
+
+  <cache name="com.everwines.services.sap.entity"
+    eternal="false"
+    statistics="true"
+    maxBytesLocalHeap="128m"
+    maxBytesLocalOffHeap="256m"
+    timeToIdleSeconds="86400"
+    timeToLiveSeconds="86400">
+    <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    <persistence strategy="localTempSwap"/>
   </cache>
 
 
