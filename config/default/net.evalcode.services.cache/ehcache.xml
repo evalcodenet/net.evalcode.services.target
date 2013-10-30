@@ -29,7 +29,7 @@
   </cache>
 
 
-  <cache name="com.everwines.services.sap.entity"
+  <cache name="com.everwines.services.sap"
     eternal="false"
     statistics="true"
     maxBytesLocalHeap="128m"
