@@ -3,7 +3,7 @@
   monitoring="autodetect" dynamicConfig="true" updateCheck="false">
 
 
-  <diskStore path="java.io.tmpdir/net.evalcode.services"/>
+  <diskStore path="java.io.tmpdir/net.evalcode/services"/>
 
 
   <defaultCache

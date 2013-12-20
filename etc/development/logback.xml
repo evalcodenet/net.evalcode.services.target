@@ -3,6 +3,7 @@
 
 
   <jmxConfigurator />
+  <consolePlugin />
 
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -10,11 +11,11 @@
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
-
+  
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${net.evalcode.services.home}/log/net.evalcode.services.log</file>
+    <file>/var/log/net.evalcode/services.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-     <fileNamePattern>${net.evalcode.services.home}/log/net.evalcode.services-%d{yyyy-MM-dd}.log</fileNamePattern>
+     <fileNamePattern>/var/log/net.evalcode/services-%d{yyyy-MM-dd}.log</fileNamePattern>
      <maxHistory>30</maxHistory>
    </rollingPolicy>
     <encoder>
@@ -23,7 +24,7 @@
   </appender>
 
   <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
-    <syslogHost>localhost</syslogHost>
+    <syslogHost>127.0.0.1</syslogHost>
     <facility>LOCAL0</facility>
     <suffixPattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</suffixPattern>
   </appender>
@@ -34,7 +35,7 @@
     <from>services@evalcode.net</from>
     <subject>[net.evalcode.services]</subject>
     <layout class="ch.qos.logback.classic.html.HTMLLayout"/>
-    <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">
+    <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTracker">
       <bufferSize>100</bufferSize>
     </cyclicBufferTracker>
   </appender>
@@ -42,13 +43,13 @@
 
   <root level="INFO">
     <appender-ref ref="FILE"/>
-    <appender-ref ref="SMTP"/>
+    <appender-ref ref="STDOUT"/>
   </root>
 
   <logger name="net.evalcode" level="INFO"/>
-  <logger name="net.sf.ehcache" level="WARN"/>
-  <logger name="org.eclipse" level="DEBUG"/>
-  <logger name="org.hibernate" level="WARN"/>
+  <logger name="net.sf.ehcache" level="INFO"/>
+  <logger name="org.eclipse" level="INFO"/>
+  <logger name="org.hibernate" level="INFO"/>
 
 
 </configuration>

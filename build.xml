@@ -26,6 +26,11 @@
     <property name="file.dist.bin.zip" value="${file.dist.prefix}-bin.zip"/>
     <property name="file.dist.doc.zip" value="${file.dist.prefix}-doc.zip"/>
     <property name="file.dist.bin.server" value="${file.dist.prefix}-server.zip"/>
+    <!-- distribution properties -->
+    <condition property="dist.services.host" value="${net.evalcode.services.host}">
+      <isset property="${net.evalcode.services.host}"/>
+    </condition>
+    <property name="dist.services.host" value="0.0.0.0"/>
   </target>
 
 
@@ -62,15 +67,14 @@
   <!-- build jar: osgi bundle -->
   <target name="jar.bundle" depends="prepare">
     <jar basedir="${dir.build}" destfile="${dir.dist}/${file.dist.bin.jar}" update="false" compress="false" index="false">
-      <zipfileset dir="${dir.config}" prefix="config" filemode="644">
+      <zipfileset dir="${dir.etc}" prefix="etc" filemode="644">
         <exclude name="default/jmxremote.password"/>
       </zipfileset>
-      <zipfileset dir="${dir.config}/default" prefix="config/default" filemode="600">
+      <zipfileset dir="${dir.etc}/default" prefix="etc/default" filemode="400">
         <include name="jmxremote.password"/>
       </zipfileset>
       <zipfileset dir="${dir.features}" prefix="features" excludes="*"/>
       <zipfileset dir="${dir.plugins}" prefix="plugins" excludes="*"/>
-      <zipfileset dir="${dir.log}" prefix="log" excludes="*"/>
     </jar>
   </target>
 
@@ -78,7 +82,7 @@
   <!-- publish artifacts -->
   <target name="publish" depends="jar.bundle">
     <tstamp>
-      <format property="now" pattern="yyyyMMddHHmmss" locale="zh,CN"/> 
+      <format property="now" pattern="yyyyMMddHHmmss" locale="en_US"/> 
     </tstamp>
     <ivy:install from="dist" to="remote" overwrite="true" validate="true"
       organisation="${bundle.group}" module="${bundle.name}" revision="${bundle.version.string}"/>
@@ -95,12 +99,13 @@
         <include name="*.target"/>
         <include name="*.xml"/>
       </zipfileset>
-      <zipfileset dir="${dir.config}" prefix="config"/>
+      <zipfileset dir="${dir.bin}" prefix="bin"/>
+      <zipfileset dir="${dir.etc}" prefix="etc"/>
       <zipfileset dir="${dir.features}" prefix="features" excludes="*"/>
       <zipfileset dir="${dir.plugins}" prefix="plugins" excludes="*"/>
       <zipfileset dir="${dir.dist}" prefix="dist" excludes="*.zip"/>
+      <zipfileset dir="${dir.resources}" prefix="resources"/>
       <zipfileset dir="${dir.doc}" prefix="doc"/>
-      <zipfileset dir="${dir.log}" prefix="log" excludes="*"/>
     </zip>
   </target>
 
@@ -108,10 +113,9 @@
   <!-- distribution: binaries -->
   <target name="dist.binaries" depends="resolve">
     <zip destfile="${dir.dist}/${file.dist.bin.zip}">
-      <zipfileset dir="${dir.config}" prefix="config"/>
+      <zipfileset dir="${dir.etc}" prefix="etc"/>
       <zipfileset dir="${dir.features}" prefix="features" excludes=".gitignore"/>
       <zipfileset dir="${dir.plugins}" prefix="plugins" excludes=".gitignore"/>
-      <zipfileset dir="${dir.log}" prefix="log" excludes="*"/>
     </zip>
   </target>
 
@@ -119,74 +123,131 @@
   <!-- distribution: server -->
   <target name="dist.server" depends="resolve">
     <copy todir="${dir.build}">
-      <fileset file="${dir.launcher}/${file.launcher.jar}"/>
+      <fileset file="${dir.bin}/${file.bin.jar}"/>
     </copy>
-    <echo file="${dir.build}/${file.launcher.sh}">#!/bin/sh
+    <echo file="${dir.build}/${file.bin.services}">#!/bin/bash
 java \
+  -Xms512m \
+  -Xmx512m \
   -Declipse.ignoreApp=true \
   -Dosgi.noShutdown=true \
-  -Dlogback.configurationFile=config/default/logback.xml \
+  -Dlogback.configurationFile=$HOME/etc/default/logback.xml \
   -Djava.net.preferIPv4Stack=true \
-  -Djava.rmi.server.hostname=services.evalcode.net \
+  -Djava.rmi.server.hostname=0.0.0.0 \
   -Djava.security.manager \
-  -Djava.security.policy=config/default/security.policy \
-  -Djavax.net.ssl.keyStore=config/default/keystore \
+  -Djava.security.policy=$HOME/etc/default/security.policy \
+  -Djavax.net.ssl.keyStore=$HOME/etc/default/keystore \
   -Djavax.net.ssl.keyStorePassword=services \
-  -Djavax.net.ssl.trustStore=config/default/truststore \
+  -Djavax.net.ssl.trustStore=$HOME/etc/default/truststore \
   -Djavax.net.ssl.trustStorePassword=services \
   -Dcom.sun.management.jmxremote \
   -Dcom.sun.management.jmxremote.ssl=true \
   -Dcom.sun.management.jmxremote.ssl.need.client.auth=true \
-  -Dcom.sun.management.jmxremote.port=1337 \
+  -Dcom.sun.management.jmxremote.port=65500 \
   -Dcom.sun.management.jmxremote.authenticate=true \
-  -Dcom.sun.management.jmxremote.access.file=config/default/jmxremote.access \
-  -Dcom.sun.management.jmxremote.password.file=config/default/jmxremote.password \
+  -Dcom.sun.management.jmxremote.access.file=$HOME/etc/default/jmxremote.access \
+  -Dcom.sun.management.jmxremote.password.file=$HOME/etc/default/jmxremote.password \
   -Dnet.sf.ehcache.disabled=false \
   -Dnet.sf.ehcache.configurationResourceName=ehcache.xml \
   -Dnet.evalcode.services.environment=production \
-  -Dnet.evalcode.services.home=. \
-  -Dnet.evalcode.services.config=./config \
-  -Dnet.evalcode.services.resources=./resources \
-  -jar startup.jar -configuration config -console
+  -Dnet.evalcode.services.home=$HOME \
+  -Dnet.evalcode.services.config=$HOME/etc \
+  -Dnet.evalcode.services.resources=$HOME/resources \
+  -jar $HOME/bin/services.jar -configuration $HOME/etc -console 65501
     </echo>
-    <echo file="${dir.build}/${file.jvisualvm.sh}">#!/bin/sh
+    <echo file="${dir.build}/${file.bin.jmx}">#!/bin/bash
 jvisualvm \
   -J-Dcom.sun.management.jmxremote.ssl=true \
-  -J-Djavax.net.ssl.keyStore=config/default/keystore \
+  -J-Djavax.net.ssl.keyStore=$HOME/etc/default/keystore \
   -J-Djavax.net.ssl.keyStorePassword=services \
-  -J-Djavax.net.ssl.trustStore=config/default/truststore \
+  -J-Djavax.net.ssl.trustStore=$HOME/etc/default/truststore \
   -J-Djavax.net.ssl.trustStorePassword=services \
-  --openjmx localhost:1337
+  --openjmx ${1}:65500
     </echo>
+    <echo file="${dir.build}/${file.sbin.init}"><![CDATA[#!/bin/bash
+### BEGIN INIT INFO
+# Provides:            net.evalcode.services
+# Required-Start:      $remote_fs $syslog
+# Required-Stop:       $remote_fs $syslog
+# Should-Start:        $local_fs
+# Should-Stop:         $local_fs
+# Default-Start:       2 3 4 5
+# Default-Stop:        0 1 6
+# Short-Description:   Start net.evalcode.services
+# Description:         Start net.evalcode.services
+### END INIT INFO
+PATH=/sbin:/bin:/usr/bin
+NAME=services
+DESC=net.evalcode.services
+USER=services
+PID=/var/run/net.evalcode/services.pid
+HOME=/opt/lib/net.evalcode/services
+
+set -e
+. /lib/lsb/init-functions
+
+case "$1" in
+  start)
+       echo -n "Starting $DESC: "
+       start-stop-daemon --user $USER --chuid $USER --chdir $HOME --exec bin/services --pidfile $PID --make-pidfile --background --start
+       echo "done."
+       ;;
+  stop)
+       echo -n "Stopping $DESC: "
+       start-stop-daemon --user $USER --signal KILL --stop --oknodo --retry 5
+       rm -f $PID
+       echo "done."
+       ;;
+  restart)
+       echo -n "Restarting $DESC: "
+       start-stop-daemon --user $USER --signal KILL --stop --oknodo --retry 5
+       rm -f $PID
+       start-stop-daemon --user $USER --chuid $USER --chdir $HOME --exec bin/services --pidfile $PID --make-pidfile --background --start
+       echo "done."
+       ;;
+  status)
+       status_of_proc -p $PID ${HOME}/bin/services $DESC  && exit 0 || exit $?
+       ;;
+  *)
+  N=/etc/init.d/$DESC
+  echo "Usage: $N {start|stop|restart|status}" >&2
+  exit 1
+  ;;
+esac
+
+exit 0
+ ]]></echo>
     <zip destfile="${dir.dist}/${file.dist.bin.server}">
-      <zipfileset dir="${dir.config}" prefix="config">
+      <zipfileset dir="${dir.etc}" prefix="etc">
         <include name="config.ini"/>
       </zipfileset>
-      <zipfileset dir="${dir.config}/default" prefix="config/default">
+      <zipfileset dir="${dir.etc}/default" prefix="etc/default" filemode="640">
         <exclude name="jmxremote.access"/>
         <exclude name="jmxremote.password"/>
         <exclude name="keystore"/>
         <exclude name="truststore"/>
         <exclude name="security.policy"/>
       </zipfileset>
-      <zipfileset dir="${dir.config}/default" prefix="config/default" filemode="400">
+      <zipfileset dir="${dir.etc}/default" prefix="etc/default" filemode="400">
         <include name="jmxremote.access"/>
         <include name="jmxremote.password"/>
         <include name="keystore"/>
         <include name="truststore"/>
         <include name="security.policy"/>
       </zipfileset>
-      <zipfileset dir="${dir.config}/production" prefix="config/production" excludes=".gitignore"/>
+      <zipfileset dir="${dir.etc}/production" prefix="etc/production" excludes=".gitignore"/>
       <zipfileset dir="${dir.resources}" prefix="resources" excludes=".gitignore"/>
       <zipfileset dir="${dir.features}" prefix="features" excludes=".gitignore"/>
       <zipfileset dir="${dir.plugins}" prefix="plugins" excludes=".gitignore"/>
-      <zipfileset dir="${dir.log}" prefix="log" excludes="*"/>
-      <zipfileset dir="${dir.build}" filemode="644">
-        <include name="${file.launcher.jar}"/>
+      <zipfileset dir="${dir.build}" prefix="bin" filemode="640">
+        <include name="${file.bin.jar}"/>
       </zipfileset>
-      <zipfileset dir="${dir.build}" filemode="755">
-        <include name="${file.launcher.sh}"/>
-        <include name="${file.jvisualvm.sh}"/>
+      <zipfileset dir="${dir.build}" prefix="bin" filemode="750">
+        <include name="${file.bin.services}"/>
+        <include name="${file.bin.jmx}"/>
+      </zipfileset>
+      <zipfileset dir="${dir.build}" prefix="sbin" filemode="755">
+        <include name="${file.sbin.init}"/>
       </zipfileset>
     </zip>
   </target>
