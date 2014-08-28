@@ -4,7 +4,7 @@
     <properties>
       <!-- jdbc connection properties -->
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/net_evalcode_services"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/asia_tmogroup_services"/>
       <property name="javax.persistence.jdbc.user" value="root"/>
       <property name="javax.persistence.jdbc.password" value=""/>
       <!-- hibernate connection properties -->
