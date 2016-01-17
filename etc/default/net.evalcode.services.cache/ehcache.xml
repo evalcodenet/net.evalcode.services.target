@@ -20,7 +20,7 @@
   <cache name="net.evalcode.services.http.security"
     eternal="false"
     statistics="false"
-    maxBytesLocalOffHeap="512m"
+    maxBytesLocalOffHeap="64m"
     maxElementsOnDisk="0"
     maxElementsInMemory="1000000"
     timeToIdleSeconds="3600"
@@ -31,10 +31,10 @@
   </cache>
 
 
-  <cache name="net.evalcode.services.http.security.gaia"
+  <cache name="net.evalcode.services.http.security.directory"
     eternal="false"
     statistics="false"
-    maxBytesLocalOffHeap="512m"
+    maxBytesLocalOffHeap="64m"
     maxElementsOnDisk="0"
     maxElementsInMemory="1000000"
     timeToIdleSeconds="3600"
@@ -48,22 +48,10 @@
   <cache name="net.evalcode.services.cache.entity"
     eternal="false"
     statistics="true"
-    maxBytesLocalHeap="128m"
-    maxBytesLocalOffHeap="256m"
+    maxBytesLocalHeap="32m"
+    maxBytesLocalOffHeap="64m"
     timeToIdleSeconds="120"
     timeToLiveSeconds="120">
-    <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
-    <persistence strategy="localTempSwap"/>
-  </cache>
-
-
-  <cache name="com.everwines.services.sap"
-    eternal="false"
-    statistics="true"
-    maxBytesLocalHeap="128m"
-    maxBytesLocalOffHeap="256m"
-    timeToIdleSeconds="86400"
-    timeToLiveSeconds="86400">
     <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     <persistence strategy="localTempSwap"/>
   </cache>

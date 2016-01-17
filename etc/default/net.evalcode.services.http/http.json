@@ -4,9 +4,9 @@
     "port": "8443",
 
     "keystore": "${net.evalcode.services.config}/default/keystore",
-    "keystore_password": "OBF:1ym71t331v9q1x8s1x821v8w1t331ym7",
+    "keystore_password": "secret",
     "truststore": "${net.evalcode.services.config}/default/truststore",
-    "truststore_password": "OBF:1ym71t331v9q1x8s1x821v8w1t331ym7",
+    "truststore_password": "secret",
     "certificate_alias": "services.evalcode.net"
   }
 }
