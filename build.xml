@@ -82,7 +82,7 @@
   <!-- publish artifacts -->
   <target name="publish" depends="jar.bundle">
     <tstamp>
-      <format property="now" pattern="yyyyMMddHHmmss" locale="en_US"/> 
+      <format property="now" pattern="yyyyMMddHHmmss" locale="en,US"/> 
     </tstamp>
     <ivy:install from="dist" to="remote" overwrite="true" validate="true"
       organisation="${bundle.group}" module="${bundle.name}" revision="${bundle.version.string}"/>
@@ -137,9 +137,9 @@ java \
   -Djava.security.manager \
   -Djava.security.policy=$HOME/etc/default/security.policy \
   -Djavax.net.ssl.keyStore=$HOME/etc/default/keystore \
-  -Djavax.net.ssl.keyStorePassword=services \
+  -Djavax.net.ssl.keyStorePassword=secret \
   -Djavax.net.ssl.trustStore=$HOME/etc/default/truststore \
-  -Djavax.net.ssl.trustStorePassword=services \
+  -Djavax.net.ssl.trustStorePassword=secret \
   -Dcom.sun.management.jmxremote \
   -Dcom.sun.management.jmxremote.ssl=true \
   -Dcom.sun.management.jmxremote.ssl.need.client.auth=true \
@@ -159,9 +159,9 @@ java \
 jvisualvm \
   -J-Dcom.sun.management.jmxremote.ssl=true \
   -J-Djavax.net.ssl.keyStore=$HOME/etc/default/keystore \
-  -J-Djavax.net.ssl.keyStorePassword=services \
+  -J-Djavax.net.ssl.keyStorePassword=secret \
   -J-Djavax.net.ssl.trustStore=$HOME/etc/default/truststore \
-  -J-Djavax.net.ssl.trustStorePassword=services \
+  -J-Djavax.net.ssl.trustStorePassword=secret \
   --openjmx ${1}:65500
     </echo>
     <echo file="${dir.build}/${file.sbin.init}"><![CDATA[#!/bin/bash
