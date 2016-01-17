@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd"
+  monitoring="autodetect" dynamicConfig="true" updateCheck="false">
+
+
+  <diskStore path="java.io.tmpdir/net.evalcode/services"/>
+
+
+  <defaultCache
+    eternal="false"
+    statistics="true"
+    timeToIdleSeconds="120"
+    timeToLiveSeconds="120"
+    maxEntriesLocalHeap="1000000"
+    memoryStoreEvictionPolicy="LRU"
+    maxMemoryOffHeap="256m"
+  />
+
+
+  <cache name="net.evalcode.services.http.security"
+    eternal="false"
+    statistics="false"
+    maxBytesLocalOffHeap="512m"
+    maxElementsOnDisk="0"
+    maxElementsInMemory="1000000"
+    timeToIdleSeconds="3600"
+    timeToLiveSeconds="3600"
+    diskPersistent="false"
+    overflowToDisk="false"
+    overflowToOffHeap="true">
+  </cache>
+
+
+  <cache name="net.evalcode.services.http.security.gaia"
+    eternal="false"
+    statistics="false"
+    maxBytesLocalOffHeap="512m"
+    maxElementsOnDisk="0"
+    maxElementsInMemory="1000000"
+    timeToIdleSeconds="3600"
+    timeToLiveSeconds="3600"
+    diskPersistent="false"
+    overflowToDisk="false"
+    overflowToOffHeap="true">
+  </cache>
+
+
+  <cache name="net.evalcode.services.cache.entity"
+    eternal="false"
+    statistics="true"
+    maxBytesLocalHeap="128m"
+    maxBytesLocalOffHeap="256m"
+    timeToIdleSeconds="120"
+    timeToLiveSeconds="120">
+    <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    <persistence strategy="localTempSwap"/>
+  </cache>
+
+
+  <cache name="com.everwines.services.sap"
+    eternal="false"
+    statistics="true"
+    maxBytesLocalHeap="128m"
+    maxBytesLocalOffHeap="256m"
+    timeToIdleSeconds="86400"
+    timeToLiveSeconds="86400">
+    <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    <persistence strategy="localTempSwap"/>
+  </cache>
+
+
+</ehcache>

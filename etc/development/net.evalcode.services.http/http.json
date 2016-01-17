@@ -1,0 +1,12 @@
+{
+  "https": {
+    "host": "0.0.0.0",
+    "port": "8443",
+
+    "keystore": "${net.evalcode.services.config}/default/keystore",
+    "keystore_password": "OBF:1ym71t331v9q1x8s1x821v8w1t331ym7",
+    "truststore": "${net.evalcode.services.config}/default/truststore",
+    "truststore_password": "OBF:1ym71t331v9q1x8s1x821v8w1t331ym7",
+    "certificate_alias": "services.dev"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "scheme": "LDAPS",
+  "host": "auth.evalcode.net",
+  "user_base": "ou=Users,dc=evalcode,dc=net",
+  "group_base": "ou=Groups,dc=evalcode,dc=net"
+}
